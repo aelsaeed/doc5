@@ -1,0 +1,14 @@
+docling>=2.31.0
+PyMuPDF==1.24.0
+Flask==3.1.0
+numpy==2.2.5
+Pillow==11.2.1
+python_dateutil==2.9.0
+python_doctr==0.11.0
+sentence_transformers==3.2.0
+setuptools==78.1.0
+spacy==3.8.0
+SQLAlchemy==2.0.40
+tabula_py==2.10.0
+transformers==4.44.2
+Werkzeug==3.1.3

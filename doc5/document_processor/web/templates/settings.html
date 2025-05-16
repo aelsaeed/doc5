@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Document Processor</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">Document Processor</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/upload">Upload</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/documents">Documents</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/settings">Settings</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <h1 class="mb-4">Application Settings</h1>
+        
+        <div class="row">
+            <div class="col-md-4">
+                <div class="list-group mb-4">
+                    <a href="#general" class="list-group-item list-group-item-action active" data-bs-toggle="list">General Settings</a>
+                    <a href="#processing" class="list-group-item list-group-item-action" data-bs-toggle="list">Processing Options</a>
+                    <a href="#models" class="list-group-item list-group-item-action" data-bs-toggle="list">Model Management</a>
+                    <a href="#system" class="list-group-item list-group-item-action" data-bs-toggle="list">System Information</a>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="general">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">General Settings</h5>
+                            </div>
+                            <div class="card-body">
+                                <form>
+                                    <div class="mb-3">
+                                        <label for="defaultMode" class="form-label">Default Processing Mode</label>
+                                        <select class="form-select" id="defaultMode">
+                                            <option value="traditional">Traditional</option>
+                                            <option value="layoutlm">LayoutLMv3</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3 form-check">
+                                        <input type="checkbox" class="form-check-input" id="saveResults">
+                                        <label class="form-check-label" for="saveResults">Save processing results to database</label>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Save Settings</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="processing">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Processing Options</h5>
+                            </div>
+                            <div class="card-body">
+                                <p>Configure processing options for document analysis.</p>
+                                <form>
+                                    <div class="mb-3">
+                                        <label for="confidenceThreshold" class="form-label">Confidence Threshold</label>
+                                        <input type="range" class="form-range" min="0" max="1" step="0.05" value="0.7" id="confidenceThreshold">
+                                        <div class="text-center" id="thresholdValue">0.7</div>
+                                    </div>
+                                    <div class="mb-3 form-check">
+                                        <input type="checkbox" class="form-check-input" id="extractEntities" checked>
+                                        <label class="form-check-label" for="extractEntities">Extract financial entities</label>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Save Options</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="models">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Model Management</h5>
+                            </div>
+                            <div class="card-body">
+                                <p>Manage AI models used for document processing.</p>
+                                <div class="alert alert-info">
+                                    Current LayoutLMv3 model: <strong>layoutlmv3-base</strong>
+                                </div>
+                                <button class="btn btn-primary">Update Models</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="system">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">System Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <p>System resource usage and information.</p>
+                                <div class="mb-3">
+                                    <strong>CPU Usage:</strong> <span>32%</span>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Memory Usage:</strong> <span>1.2 GB</span>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>GPU:</strong> <span>Not Available</span>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Storage:</strong> <span>4.5 GB Free</span>
+                                </div>
+                                <button class="btn btn-primary">Refresh</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Simple script to update the threshold value display
+        const thresholdInput = document.getElementById('confidenceThreshold');
+        const thresholdDisplay = document.getElementById('thresholdValue');
+        
+        thresholdInput.addEventListener('input', function() {
+            thresholdDisplay.textContent = this.value;
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93886b847b53bcb3',t:'MTc0NjAzMDU4Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+</body>
+</html>

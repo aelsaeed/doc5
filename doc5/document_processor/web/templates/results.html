@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Processing Results - Document Processor</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .document-container {
+            min-height: 500px;
+            border: 1px solid #ddd;
+            padding: 0;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .document-embed {
+            width: 100%;
+            height: 500px;
+            border: none;
+        }
+        .results-container {
+            max-height: 600px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            background-color: #fff;
+        }
+        .field-item {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            flex-direction: column;
+        }
+        .field-item:last-child {
+            border-bottom: none;
+        }
+        .field-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #16873E;
+        }
+        .field-value {
+            font-family: 'Courier New', monospace;
+            background-color: #f8f9fa;
+            padding: 5px 10px;
+            border-radius: 3px;
+        }
+        body {
+            background-color: #f5f5f5;
+        }
+        .navbar {
+            background-color: #16873E !important;
+        }
+        .card-header {
+            background-color: #16873E !important;
+            color: white;
+        }
+        .nav-tabs .nav-link.active {
+            color: #16873E;
+            font-weight: bold;
+            border-top: 3px solid #16873E;
+        }
+        .btn-info {
+            background-color: #17a2b8;
+            border-color: #17a2b8;
+            color: white;
+        }
+        .btn-info:hover {
+            background-color: #138496;
+            border-color: #117a8b;
+            color: white;
+        }
+        .entity-badge {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.5rem;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            max-height: 500px;
+            overflow-y: auto;
+            font-size: 0.9rem;
+        }
+        .pdf-controls {
+            background-color: #e9ecef;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .pdf-controls .btn-group {
+            display: flex;
+        }
+        .image-document {
+            max-width: 100%;
+            max-height: 500px;
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">Document Processor</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/upload">Upload</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/documents">Documents</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="mb-0">Document Processing Results</h3>
+                <div>
+                    <span class="badge bg-primary">{{ mode|capitalize }} Mode</span>
+                </div>
+            </div>
+            <div class="card-body">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <div class="row">
+                    <!-- Document Preview -->
+                    <div class="col-md-6">
+                        <h4 class="mb-3">Document Viewer</h4>
+                        <div class="document-container">
+                            {% if result.document_path %}
+                                {% set file_ext = result.file_name.split('.')[-1].lower() %}
+                                
+                                {% if file_ext in ['pdf'] %}
+                                    <!-- PDF Viewer -->
+                                    <div class="pdf-controls">
+                                        <div class="btn-group">
+                                            <a href="/static/{{ result.document_path }}" class="btn btn-sm btn-secondary" target="_blank" title="Open in new tab">
+                                                <i class="bi bi-box-arrow-up-right"></i> Open
+                                            </a>
+                                            <a href="/static/{{ result.document_path }}" class="btn btn-sm btn-primary" download title="Download">
+                                                <i class="bi bi-download"></i> Download
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <iframe src="/static/{{ result.document_path }}" class="document-embed" title="Document Viewer"></iframe>
+                                {% elif file_ext in ['jpg', 'jpeg', 'png', 'gif'] %}
+                                    <!-- Image Viewer -->
+                                    <div class="pdf-controls">
+                                        <div class="btn-group">
+                                            <a href="/static/{{ result.document_path }}" class="btn btn-sm btn-secondary" target="_blank" title="Open in new tab">
+                                                <i class="bi bi-box-arrow-up-right"></i> Open
+                                            </a>
+                                            <a href="/static/{{ result.document_path }}" class="btn btn-sm btn-primary" download title="Download">
+                                                <i class="bi bi-download"></i> Download
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="p-3 text-center">
+                                        <img src="/static/{{ result.document_path }}" alt="Document" class="image-document">
+                                    </div>
+                                {% else %}
+                                    <!-- Other document types -->
+                                    <div class="text-center py-5">
+                                        <div class="mb-3">
+                                            <i class="bi bi-file-earmark-text" style="font-size: 48px;"></i>
+                                        </div>
+                                        <h5>{{ result.file_name }}</h5>
+                                        <p class="text-muted">Document type: {{ file_ext.upper() }}</p>
+                                        <div class="mt-4">
+                                            <a href="/static/{{ result.document_path }}" class="btn btn-primary" download>
+                                                <i class="bi bi-download"></i> Download Document
+                                            </a>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                <div class="text-center py-5">
+                                    <span class="text-muted">Document not available for preview</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="card mb-3">
+                            <div class="card-header" style="background-color: #16873E; color: white;">
+                                <h5 class="mb-0">Document Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <dl class="row mb-0">
+                                    <dt class="col-sm-4">File Name:</dt>
+                                    <dd class="col-sm-8">{{ result.file_name }}</dd>
+                                    
+                                    <dt class="col-sm-4">Document Type:</dt>
+                                    <dd class="col-sm-8">{{ result.doc_type }}</dd>
+                                    
+                                    <dt class="col-sm-4">Confidence:</dt>
+                                    <dd class="col-sm-8">{{ "%.2f"|format(result.classification_confidence*100) }}%</dd>
+                                    
+                                    <dt class="col-sm-4">Processing:</dt>
+                                    <dd class="col-sm-8">{{ result.processing_mode|capitalize }}</dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Results -->
+                    <div class="col-md-6">
+                        <h4 class="mb-3">Extraction Results</h4>
+                        <ul class="nav nav-tabs" id="resultTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link {% if mode == 'targeted' %}active{% endif %}" 
+                                        id="forms-tab" data-bs-toggle="tab" 
+                                        data-bs-target="#forms" type="button" 
+                                        role="tab" aria-controls="forms" 
+                                        aria-selected="{% if mode == 'targeted' %}true{% else %}false{% endif %}">
+                                    Forms
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link {% if mode == 'bulk' %}active{% endif %}" 
+                                        id="raw-text-tab" data-bs-toggle="tab" 
+                                        data-bs-target="#raw-text" type="button" 
+                                        role="tab" aria-controls="raw-text" 
+                                        aria-selected="{% if mode == 'bulk' %}true{% else %}false{% endif %}">
+                                    Raw Text
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="entities-tab" data-bs-toggle="tab" 
+                                        data-bs-target="#entities" type="button" 
+                                        role="tab" aria-controls="entities" aria-selected="false">
+                                    Entities
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="tables-tab" data-bs-toggle="tab" 
+                                        data-bs-target="#tables" type="button" 
+                                        role="tab" aria-controls="tables" aria-selected="false">
+                                    Tables
+                                </button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content results-container mt-2" id="resultTabsContent">
+                            <!-- Forms Tab (Targeted Mode) -->
+                            <div class="tab-pane fade {% if mode == 'targeted' %}show active{% endif %}" 
+                                 id="forms" role="tabpanel" aria-labelledby="forms-tab">
+                                {% if mode == 'targeted' and result.extracted_fields %}
+                                    {% for field, value in result.extracted_fields.items() %}
+                                        {% if not field.startswith('_') %}
+                                            <div class="field-item">
+                                                <div class="field-label">{{ field|replace('_', ' ')|title }}</div>
+                                                <div class="field-value">{{ value }}</div>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% elif result.entities %}
+                                    <div class="alert alert-info">
+                                        <i class="bi bi-info-circle"></i> Showing extracted entities. For more specific field extraction, use Targeted Extraction mode.
+                                    </div>
+                                    {% for entity in result.entities %}
+                                        <div class="field-item">
+                                            <div class="field-label">{{ entity.type }}</div>
+                                            <div class="field-value">{{ entity.text }}</div>
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="alert alert-warning">
+                                        <i class="bi bi-exclamation-triangle"></i> No fields extracted. Try using Targeted Extraction mode.
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Raw Text Tab (Bulk Mode) -->
+                            <div class="tab-pane fade {% if mode == 'bulk' %}show active{% endif %}" 
+                                 id="raw-text" role="tabpanel" aria-labelledby="raw-text-tab">
+                                {% if result.text %}
+                                    <pre>{{ result.text }}</pre>
+                                {% else %}
+                                    <div class="alert alert-warning">
+                                        <i class="bi bi-exclamation-triangle"></i> No text extracted. Try using Bulk Extraction mode.
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Entities Tab -->
+                            <div class="tab-pane fade" id="entities" role="tabpanel" aria-labelledby="entities-tab">
+                                {% if result.entities %}
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Type</th>
+                                                    <th>Value</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for entity in result.entities %}
+                                                    <tr>
+                                                        <td>
+                                                            <span class="badge bg-secondary entity-badge">{{ entity.type }}</span>
+                                                        </td>
+                                                        <td>{{ entity.text }}</td>
+                                                        <td>
+                                                            {% if entity.status %}
+                                                                <span class="badge {% if entity.status == 'Valid' %}bg-success{% else %}bg-warning{% endif %}">
+                                                                    {{ entity.status }}
+                                                                </span>
+                                                            {% else %}
+                                                                <span class="badge bg-success">Valid</span>
+                                                            {% endif %}
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                {% else %}
+                                    <div class="alert alert-warning">
+                                        <i class="bi bi-exclamation-triangle"></i> No entities extracted.
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Tables Tab -->
+                            <div class="tab-pane fade" id="tables" role="tabpanel" aria-labelledby="tables-tab">
+                                {% if result.tables and result.tables|length > 0 %}
+                                    {% for table in result.tables %}
+                                        <div class="mb-4">
+                                            <h6>Table {{ loop.index }}</h6>
+                                            <div class="table-responsive">
+                                                {% if table.header %}
+                                                    <table class="table table-bordered table-sm">
+                                                        <thead class="table-light">
+                                                            <tr>
+                                                                {% for header in table.header %}
+                                                                    <th>{{ header }}</th>
+                                                                {% endfor %}
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {% for row in table.rows %}
+                                                                <tr>
+                                                                    {% for cell in row %}
+                                                                        <td>{{ cell }}</td>
+                                                                    {% endfor %}
+                                                                </tr>
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                {% else %}
+                                                    <table class="table table-bordered table-sm">
+                                                        <tbody>
+                                                            {% for row in table %}
+                                                                <tr>
+                                                                    {% for key, value in row.items() %}
+                                                                        <td>{{ value }}</td>
+                                                                    {% endfor %}
+                                                                </tr>
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="alert alert-warning">
+                                        <i class="bi bi-exclamation-triangle"></i> No tables extracted.
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <div class="d-flex justify-content-between">
+                        <a href="/upload" class="btn btn-primary">Process Another Document</a>
+                        <a href="/" class="btn btn-outline-secondary">Back to Home</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+</body>
+</html>
